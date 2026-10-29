@@ -1,3 +1,4 @@
+using MqttGateway.Api.Infrastructure.Mqtt;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -13,6 +14,11 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
+    builder.Services
+        .AddOptionsWithValidateOnStart<MattOptions>()
+        .BindConfiguration(MattOptions.SectionName)
+        .ValidateDataAnnotations();
+    
     builder.Services.AddOpenApi();
     builder.Services.AddHealthChecks();
 
