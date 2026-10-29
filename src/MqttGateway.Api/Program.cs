@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MqttGateway.Api.Infrastructure.Mqtt;
 using Serilog;
 using Serilog.Events;
 
 const string healthCheckPath = "/healthz";
+const string readyTag = "ready";
+const string healthPathPrefix = "/health";
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -22,7 +25,7 @@ try
         .ValidateDataAnnotations();
 
     builder.Services.AddOpenApi();
-    builder.Services.AddHealthChecks();
+    builder.Services.AddHealthChecks(); // later I plan to add DbContext and Redis tag cheks.
 
     var app = builder.Build();
 
@@ -35,8 +38,16 @@ try
 
     app.UseHttpsRedirection();
 
-    app.MapHealthChecks(healthCheckPath);
+    app.MapHealthChecks($"{healthPathPrefix}/live", new HealthCheckOptions
+    {
+        Predicate = _ => false
+    });
 
+    app.MapHealthChecks($"{healthPathPrefix}/ready", new HealthCheckOptions
+    {
+        Predicate = check => check.Tags.Contains(readyTag)
+    });
+    
     app.Run();
 
     return 0;
@@ -58,7 +69,7 @@ LogEventLevel RequestLogLevel(HttpContext context, double elapsedMilliseconds, E
         return LogEventLevel.Error;
     }
 
-    return context.Request.Path.StartsWithSegments(healthCheckPath)
+    return context.Request.Path.StartsWithSegments(healthPathPrefix)
         ? LogEventLevel.Verbose
         : LogEventLevel.Information;
 }
