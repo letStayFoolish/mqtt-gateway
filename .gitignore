@@ -483,3 +483,6 @@ $RECYCLE.BIN/
 
 # Local compose secrets
 .env
+
+# Test results
+[Tt]est[Rr]esults/
