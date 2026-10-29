@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MqttGateway.Api.Infrastructure.Mqtt;
 
-public sealed class MattOptions
+public sealed class MqttOptions
 {
     public const string SectionName = "MqttOptions";
 

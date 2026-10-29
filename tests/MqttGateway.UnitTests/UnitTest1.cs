@@ -1,4 +1,4 @@
-﻿namespace MattGateway.UnitTests;
+﻿namespace MqttGateway.UnitTests;
 
 public class UnitTest1
 {

@@ -2,6 +2,6 @@
   <Folder Name="/src/">
     <Project Path="src/MqttGateway.Api/MqttGateway.Api.csproj" />
   </Folder>
-  <Project Path="tests/MattGateway.UnitTests/MattGateway.UnitTests.csproj" />
   <Project Path="tests/MqttGateway.IntegrationTests/MqttGateway.IntegrationTests.csproj" />
+  <Project Path="tests/MqttGateway.UnitTests/MqttGateway.UnitTests.csproj" />
 </Solution>

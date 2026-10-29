@@ -11,12 +11,11 @@ try
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.FromLogContext());
-
+        .ReadFrom.Services(services));
+    
     builder.Services
-        .AddOptionsWithValidateOnStart<MattOptions>()
-        .BindConfiguration(MattOptions.SectionName)
+        .AddOptionsWithValidateOnStart<MqttOptions>()
+        .BindConfiguration(MqttOptions.SectionName)
         .ValidateDataAnnotations();
     
     builder.Services.AddOpenApi();
