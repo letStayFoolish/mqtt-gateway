@@ -486,3 +486,6 @@ $RECYCLE.BIN/
 
 # Test results
 [Tt]est[Rr]esults/
+
+# Serilog file sink
+logs/
