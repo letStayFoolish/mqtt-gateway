@@ -7,21 +7,19 @@ public sealed class MqttOptions
     public const string SectionName = "MqttOptions";
 
     [Required]
-    public string Host { get; set; }
+    public required string Host { get; init; }
 
-    [Required]
     [Range(1, 65535)]
-    public int Port { get; set; }
+    public required int Port { get; init; }
 
     [Required]
     [MaxLength(50)]
-    public string ClientId { get; set; }
+    public required string ClientId { get; init; }
 
     [Required]
     [MaxLength(100)]
-    public string Username { get; set; }
+    public required string Username { get; init; }
 
     [Required]
-    [MaxLength(10)]
-    public string Password { get; set; }
+    public required string Password { get; init; }
 }
