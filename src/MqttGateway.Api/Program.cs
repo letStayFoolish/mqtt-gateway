@@ -1,14 +1,14 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using MqttGateway.Api.Infrastructure.Mqtt;
 using Serilog;
 using Serilog.Events;
 
-const string healthCheckPath = "/healthz";
 const string readyTag = "ready";
 const string healthPathPrefix = "/health";
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .CreateBootstrapLogger();
 
 try
