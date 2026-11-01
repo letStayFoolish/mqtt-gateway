@@ -14,7 +14,7 @@ public class MqttOptionsValidationTests
     //   "ClientIdPrefix": "Mqtt-ClientId-"
     // },
     [Fact]
-    public async Task ValidMqttOptionsConfig_Returns_Ok()
+    public async Task ValidMqttOptionsConfigReturnsOk()
     {
         var settings = new Dictionary<string, string?>
         {
@@ -31,7 +31,7 @@ public class MqttOptionsValidationTests
     }
 
     [Fact]
-    public async Task InvalidSettingsData_ThrowsOptionValidationException()
+    public async Task InvalidSettingsDataThrowsOptionValidationException()
     {
         var settings = new Dictionary<string, string?>
         {
@@ -46,7 +46,7 @@ public class MqttOptionsValidationTests
     }
 
     [Fact]
-    public async Task StartAsync_Throws_WhenPortIsMissing()
+    public async Task StartAsyncThrowsWhenPortIsMissing()
     {
         var settings = new Dictionary<string, string?>
         {
