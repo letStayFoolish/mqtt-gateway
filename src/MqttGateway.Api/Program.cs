@@ -26,6 +26,7 @@ try
 
     builder.Services.AddOpenApi();
     builder.Services.AddHealthChecks(); // later I plan to add DbContext and Redis tag cheks.
+    builder.Services.AddHostedService<MqttConnectionWorker>();
 
     var app = builder.Build();
 
