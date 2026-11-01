@@ -489,3 +489,6 @@ $RECYCLE.BIN/
 
 # Serilog file sink
 logs/
+
+# diff-brief output
+.review/

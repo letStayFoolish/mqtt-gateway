@@ -46,9 +46,8 @@ public class MqttOptionsValidationTests
     }
 
     [Fact]
-    public async Task StartAsync_Throws_WhenPortIsOutOfRange()
+    public async Task StartAsync_Throws_WhenPortIsMissing()
     {
-        //port is mising
         var settings = new Dictionary<string, string?>
         {
             [$"{MqttOptions.SectionName}:Host"] = "localhost",
