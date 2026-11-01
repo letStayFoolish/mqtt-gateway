@@ -1,0 +1,6 @@
+@MqttGateway.Api_HostAddress = http://localhost:5219
+
+GET http://localhost:5219/health/live
+Accept: text/html
+
+###
