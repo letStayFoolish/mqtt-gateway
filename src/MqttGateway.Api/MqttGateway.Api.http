@@ -4,3 +4,8 @@ GET http://localhost:5219/health/live
 Accept: text/html
 
 ###
+
+GET http://localhost:5219/api/connection
+Accept: application/json
+
+###

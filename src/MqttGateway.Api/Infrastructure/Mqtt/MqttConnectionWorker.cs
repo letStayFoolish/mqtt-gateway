@@ -1,67 +1,68 @@
-using Microsoft.Extensions.Options;
-using MQTTnet;
-
 namespace MqttGateway.Api.Infrastructure.Mqtt;
 
-public class MqttConnectionWorker(IOptions<MqttOptions> options, ILogger<MqttConnectionWorker> logger) : BackgroundService
+public class MqttConnectionWorker(MqttConnection connection, ILogger<MqttConnectionWorker> logger) : BackgroundService
 {
-    private readonly string host = options.Value.Host;
-    private readonly string clientIdPrefix = $"{options.Value.ClientIdPrefix}{Guid.NewGuid().ToString("N")[..8]}";
-    private readonly int port = options.Value.Port;
-    
-    //Constants
     private const int HealthyIntervalSeconds = 5;
     private const int BackoffBaseSeconds = 1;
     private const int BackoffCapSeconds = 30;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var factory = new MqttClientFactory();
-        using var client = factory.CreateMqttClient();
-        var clientOptions = new MqttClientOptionsBuilder()
-            .WithTcpServer(host, port)
-            .WithClientId(clientIdPrefix)
-            .WithTimeout(TimeSpan.FromSeconds(10))
-            .Build();
-
-        var failedAttempts = 0;
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
                 var delay = TimeSpan.FromSeconds(HealthyIntervalSeconds);
-                
+
                 try
                 {
-                    if (!await client.TryPingAsync(cancellationToken: stoppingToken))
+                    if (!await connection.IsAliveAsync(stoppingToken))
                     {
-                        await client.ConnectAsync(clientOptions, stoppingToken);
-                        failedAttempts = 0;
+                        await connection.ConnectAsync(stoppingToken);
                         logger.LogInformation("Mqtt Connection Worker Connected.");
                     }
                 }
-                catch (Exception ex) when (ex is not OperationCanceledException)
+                catch (Exception exception) when (exception is not OperationCanceledException)
                 {
-                    failedAttempts++;
+                    int failedAttempts = connection.ReportFailure(exception);
                     delay = NextBackoff(failedAttempts);
                     logger.LogWarning(
                         "MQTT connect failed (attempt {Attempt}): {ExceptionType}: {Reason}. Retrying in {DelaySeconds:F1}s.",
                         failedAttempts,
-                        ex.GetType().Name,
-                        ex.GetBaseException().Message,
+                        exception.GetType().Name,
+                        exception.GetBaseException().Message,
                         delay.TotalSeconds);
-                    
-                    logger.LogDebug(ex, "MQTT connect failure detail: (attemt {Attemt})", failedAttempts);
+
+                    logger.LogDebug(exception, "MQTT connect failure detail: (attemt {Attempt})", failedAttempts);
                 }
 
                 await Task.Delay(delay, stoppingToken);
             }
         }
-        catch (OperationCanceledException ex)
+        catch (OperationCanceledException)
         {
-            logger.LogError("Connection lost. Error: {ex}", ex);
+            logger.LogInformation("MQTT worker stopping.");
+        }
+        finally
+        {
+            await DisconnectQuietlyAsync();
         }
     }
+
+    private async Task DisconnectQuietlyAsync()
+    {
+        try
+        {
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await connection.DisconnectAsync(timeout.Token);
+            logger.LogInformation("MQTT client disconnected cleanly.");
+        }
+        catch (Exception exception)
+        {
+            logger.LogDebug(exception, "Clean MQTT disconnect failed during shutdown.");
+        }
+    }
+   
     
     private static TimeSpan NextBackoff(int attempt)
     {
