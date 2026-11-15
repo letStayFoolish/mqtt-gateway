@@ -1,0 +1,11 @@
+root = true
+
+[*.cs]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# CA1848: LoggerMessage delegati su optimizacija za vrele putanje.
+# Ovde se loguje nekoliko puta u minuti — ceremonija ne vredi.
+# Preispitati u F3: ingest poruka JESTE vrela putanja.
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1873.severity = none

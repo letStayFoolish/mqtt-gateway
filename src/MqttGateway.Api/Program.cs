@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using MqttGateway.Api.Features.Connection;
 using MqttGateway.Api.Infrastructure.Mqtt;
 using Serilog;
 using Serilog.Events;
@@ -26,6 +27,8 @@ try
 
     builder.Services.AddOpenApi();
     builder.Services.AddHealthChecks(); // later I plan to add DbContext and Redis tag cheks.
+    builder.Services.AddHostedService<MqttConnectionWorker>();
+    builder.Services.AddSingleton<MqttConnection>();
 
     var app = builder.Build();
 
@@ -47,7 +50,9 @@ try
     {
         Predicate = check => check.Tags.Contains(readyTag)
     });
-    
+
+    app.MapGetConnection();
+
     app.Run();
 
     return 0;
